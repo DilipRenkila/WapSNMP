@@ -18,6 +18,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"os"
+	"io/ioutil"
 )
 
 type V3user struct {
@@ -737,6 +739,8 @@ func (w WapSNMP) ParseTrap(response []byte) error {
 	respPacket := decodedResponse[3].([]interface{})
 	var varbinds []interface{}
 	if (snmpVer==1){
+		err = ioutil.WriteFile("/projects/gowiki/A4/trap.log",[]byte(fmt.Sprintf("OID: %s\n",respPacket[1])), 0644)
+		check(err)
 		fmt.Printf("OID: %s\n",respPacket[1])
 		fmt.Printf("Agent Address: %s\n",respPacket[2])
 		fmt.Printf("Generic Trap: %d\n",respPacket[3])
@@ -758,4 +762,9 @@ func (w WapSNMP) ParseTrap(response []byte) error {
 // Close the net.conn in WapSNMP.
 func (w WapSNMP) Close() error {
 	return w.conn.Close()
+}
+func check(e error) {
+    if e != nil {
+        panic(e)
+    }
 }
