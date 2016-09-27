@@ -739,7 +739,7 @@ func (w WapSNMP) ParseTrap(response []byte) error {
 	respPacket := decodedResponse[3].([]interface{})
 	var varbinds []interface{}
 	if (snmpVer==1){
-		err = ioutil.WriteFile("/projects/gowiki/A4/trap.log",[]byte(fmt.Sprintf("OID: %s\n",respPacket[1])), 0644)
+		err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte(fmt.Sprintf("OID: %s\n",respPacket[1])), 0644)
 		check(err)
 		fmt.Printf("OID: %s\n",respPacket[1])
 		fmt.Printf("Agent Address: %s\n",respPacket[2])
