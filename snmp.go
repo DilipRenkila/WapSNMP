@@ -18,8 +18,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	//"os"
-	"io/ioutil"
+	"os"
+
 )
 
 type V3user struct {
@@ -660,7 +660,13 @@ func (w WapSNMP) GetTable(oid Oid) (map[string]interface{}, error) {
 }
 
 // ParseTrap parses a received SNMP trap and returns  a map of oid to objects
-func (w WapSNMP) ParseTrap(response []byte) error {
+func (w WapSNMP) ParseTrap(response []byte,filename string) error {
+	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+    		panic(err)
+	}
+	defer f.Close()
+
 	decodedResponse, err := DecodeSequence(response)
 	if err != nil {
 		return  err
@@ -739,17 +745,18 @@ func (w WapSNMP) ParseTrap(response []byte) error {
 	respPacket := decodedResponse[3].([]interface{})
 	var varbinds []interface{}
 	if (snmpVer==1){
-		err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte(fmt.Sprintf("OID: %s\n",respPacket[1])), 0644)
-		//err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte("hi"), 0644)
-		check(err)
+		if _, err = f.WriteString(fmt.Sprintf("OID: %s\n",respPacket[1])); err != nil {
+   		 panic(err)
+		}
+		if _, err = f.WriteString(fmt.Sprintf("Agent Address: %s\n",respPacket[2])); err != nil {
+   		 panic(err)
+		}
+		if _, err = f.WriteString(fmt.Sprintf("Generic Trap: %d\n",respPacket[3])); err != nil {
+   		 panic(err)
+		}
 		fmt.Printf("OID: %s\n",respPacket[1])
-		err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte(fmt.Sprintf("Agent Address: %s\n",respPacket[2])), 0644)
-		check(err)
 		fmt.Printf("Agent Address: %s\n",respPacket[2])
-		err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte(fmt.Sprintf("Generic Trap: %d\n",respPacket[3])), 0644)
-		check(err)
 		fmt.Printf("Generic Trap: %d\n",respPacket[3])
-
 		varbinds = respPacket[6].([]interface{})
 	}else{
 		varbinds = respPacket[4].([]interface{})
@@ -758,13 +765,15 @@ func (w WapSNMP) ParseTrap(response []byte) error {
 	for i:=1;i<len(varbinds);i++ {
 		varoid:= varbinds[i].([]interface{})[1]
 		result := varbinds[i].([]interface{})[2]
-		err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte(fmt.Sprintf("%s = %v\n",varoid,result)), 0644)
-		check(err)
+		if _, err = f.WriteString(fmt.Sprintf("%s = %v\n",varoid,result)); err != nil {
+   		 panic(err)
+		}
 		fmt.Printf("%s = %v\n",varoid,result);
 	}
-	err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte("\n"), 0644)
-	check(err)
 	fmt.Printf("\n");
+		if _, err = f.WriteString(fmt.Sprintf("\n")); err != nil {
+   		 panic(err)
+		}
 
 	return nil
 }
