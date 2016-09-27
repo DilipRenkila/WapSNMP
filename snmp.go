@@ -20,6 +20,7 @@ import (
 	"errors"
 	"os"
 	"database/sql"
+	"strconv"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -782,7 +783,8 @@ func (w WapSNMP) ParseTrap(response []byte,filename string) error {
 			Fqdn = fmt.Sprintf("%v",result)
 		}
 		if varoid == ".1.3.6.1.4.1.2789.41717.10.2" {
-			Status = fmt.Sprintf("%v",result)
+			s := fmt.Sprintf("%v",result)
+			Status, _ = strconv.Atoi(s)
 		}
 	}
 	fmt.Printf("\n");
