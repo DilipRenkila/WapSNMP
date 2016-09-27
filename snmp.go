@@ -19,7 +19,8 @@ import (
 	"encoding/binary"
 	"errors"
 	"os"
-
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type V3user struct {
@@ -661,6 +662,8 @@ func (w WapSNMP) GetTable(oid Oid) (map[string]interface{}, error) {
 
 // ParseTrap parses a received SNMP trap and returns  a map of oid to objects
 func (w WapSNMP) ParseTrap(response []byte,filename string) error {
+	var Fqdn string
+	var Status int
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
     		panic(err)
@@ -775,13 +778,76 @@ func (w WapSNMP) ParseTrap(response []byte,filename string) error {
    		 panic(err)
 		}
 		fmt.Printf("%s = %v\n",varoid,result);
+		if varoid == ".1.3.6.1.4.1.2789.41717.10.1" {
+			Fqdn = result
+		}
+		if varoid == ".1.3.6.1.4.1.2789.41717.10.2" {
+			Status = result
+		}
 	}
 	fmt.Printf("\n");
 		if _, err = f.WriteString(fmt.Sprintf("\n")); err != nil {
    		 panic(err)
 		}
-
+	mySql(Fqdn,Status)
 	return nil
+}
+
+func mySql(FQDN string,STATUS int) {
+	db, err := sql.Open("mysql", "root:1@/ANM")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+
+
+	rows ,err:= db.Query("select * from Traps where FQDN = ?",FQDN)
+	if err != nil {
+		panic(err.Error())
+	}
+	i := 0
+	for rows.Next(){
+		i = i+1
+	}
+	fmt.Println(i)
+	rows ,err = db.Query("select * from Traps where FQDN = ?",FQDN)
+	if err != nil {
+		panic(err.Error())
+	}
+	if i > 0 {
+
+		for rows.Next(){
+			var status int
+			var fqdn string
+			var Time int
+			var prev_status int
+			var prev_time int
+			err = rows.Scan(&fqdn, &status, &Time, &prev_status,&prev_time)
+			if err != nil {
+				panic(err.Error())
+			}
+			s, err := db.Prepare("UPDATE Traps set STATUS= ?,TIME=?,prev_status=?,prev_time=? WHERE FQDN=?")
+			if err != nil {
+				panic(err.Error())
+			}
+			defer s.Close()
+			_, err = s.Exec(STATUS,int(time.Now().Unix()),status,Time,FQDN)
+			if err != nil {
+				panic(err.Error())
+			}
+
+		}
+	}else{
+		s, err := db.Prepare("INSERT INTO Traps VALUES(?,?,?,?,?)")
+		if err != nil {
+			panic(err.Error())
+		}
+		_, err = s.Exec(FQDN,int(time.Now().Unix()),STATUS,0,0)
+		if err != nil {
+			panic(err.Error())
+		}
+
+	}
 }
 
 // Close the net.conn in WapSNMP.
