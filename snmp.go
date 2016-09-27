@@ -782,7 +782,7 @@ func (w WapSNMP) ParseTrap(response []byte,filename string) error {
 			Fqdn = fmt.Sprintf("%v",result)
 		}
 		if varoid == ".1.3.6.1.4.1.2789.41717.10.2" {
-			Status = result
+			Status = fmt.Sprintf("%v",result)
 		}
 	}
 	fmt.Printf("\n");
