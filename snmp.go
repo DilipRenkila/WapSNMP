@@ -663,8 +663,8 @@ func (w WapSNMP) GetTable(oid Oid) (map[string]interface{}, error) {
 
 // ParseTrap parses a received SNMP trap and returns  a map of oid to objects
 func (w WapSNMP) ParseTrap(response []byte,filename string) error {
-	var Fqdn string
-	var Status int
+	var Fqdn []string
+	var Status []int
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
     		panic(err)
@@ -780,18 +780,19 @@ func (w WapSNMP) ParseTrap(response []byte,filename string) error {
 		}
 		fmt.Printf("%s = %v\n",varoid,result);
 		if varoid == ".1.3.6.1.4.1.2789.41717.10.1" {
-			Fqdn = fmt.Sprintf("%v",result)
+			Fqdn = append(Fqdn,fmt.Sprintf("%v",result))
 		}
 		if varoid == ".1.3.6.1.4.1.2789.41717.10.2" {
 			s := fmt.Sprintf("%v",result)
-			Status, _ = strconv.Atoi(s)
+			S, _ := strconv.Atoi(s)
+			Status = append(Status,S)
 		}
 	}
 	fmt.Printf("\n");
 		if _, err = f.WriteString(fmt.Sprintf("\n")); err != nil {
    		 panic(err)
 		}
-	mySql(Fqdn,Status)
+	mySql(Fqdn[0],Status[0])
 	return nil
 }
 
