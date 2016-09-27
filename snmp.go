@@ -748,7 +748,7 @@ func (w WapSNMP) ParseTrap(response []byte) error {
 	for i:=1;i<len(varbinds);i++ {
 		varoid:= varbinds[i].([]interface{})[1]
 		result := varbinds[i].([]interface{})[2]
-		fmt.Printf("%s = %s\n",varoid,result);
+		fmt.Printf("%s = %v\n",varoid,result);
 	}
 	fmt.Printf("\n");
 
