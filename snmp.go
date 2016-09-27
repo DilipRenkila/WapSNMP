@@ -18,7 +18,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"os"
+	//"os"
 	"io/ioutil"
 )
 
