@@ -792,7 +792,8 @@ func (w WapSNMP) ParseTrap(response []byte,filename string) error {
 		if _, err = f.WriteString(fmt.Sprintf("\n")); err != nil {
    		 panic(err)
 		}
-	mySql(Fqdn[0],Status[0])
+	fmt.Println(Status,Fqdn)
+	//mySql(Fqdn[0],Status[0])
 	return nil
 }
 
