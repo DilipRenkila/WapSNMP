@@ -679,9 +679,15 @@ func (w WapSNMP) ParseTrap(response []byte,filename string) error {
 		snmpVer++;
 	}
 	fmt.Printf("Version:%d\n",snmpVer);
+		if _, err = f.WriteString(fmt.Sprintf("Version:%d\n",snmpVer)); err != nil {
+   		 panic(err)
+		}
 	if (snmpVer<3){
 		community = decodedResponse[2].(string);
 		fmt.Printf("Community:%s\n",community);
+		if _, err = f.WriteString(fmt.Sprintf("Community:%s\n",community)); err != nil {
+   		 panic(err)
+		}
 	}else{
 		/*
 		for i, val := range decodedResponse{
