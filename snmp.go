@@ -743,8 +743,13 @@ func (w WapSNMP) ParseTrap(response []byte) error {
 		//err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte("hi"), 0644)
 		check(err)
 		fmt.Printf("OID: %s\n",respPacket[1])
+		err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte(fmt.Sprintf("Agent Address: %s\n",respPacket[2])), 0644)
+		check(err)
 		fmt.Printf("Agent Address: %s\n",respPacket[2])
+		err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte(fmt.Sprintf("Generic Trap: %d\n",respPacket[3])), 0644)
+		check(err)
 		fmt.Printf("Generic Trap: %d\n",respPacket[3])
+
 		varbinds = respPacket[6].([]interface{})
 	}else{
 		varbinds = respPacket[4].([]interface{})
@@ -753,8 +758,12 @@ func (w WapSNMP) ParseTrap(response []byte) error {
 	for i:=1;i<len(varbinds);i++ {
 		varoid:= varbinds[i].([]interface{})[1]
 		result := varbinds[i].([]interface{})[2]
+		err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte(fmt.Sprintf("%s = %v\n",varoid,result)), 0644)
+		check(err)
 		fmt.Printf("%s = %v\n",varoid,result);
 	}
+	err = ioutil.WriteFile("/home/dilip/projects/gowiki/A4/trap.log",[]byte("\n"), 0644)
+	check(err)
 	fmt.Printf("\n");
 
 	return nil
