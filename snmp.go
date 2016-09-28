@@ -779,11 +779,12 @@ func (w WapSNMP) ParseTrap(response []byte,filename string) error {
    		 panic(err)
 		}
 		fmt.Printf("%s = %v\n",varoid,result);
-		if varoid == ".1.3.6.1.4.1.2789.41717.10.1" {
+		oid:=fmt.Sprintf("%v",varoid)
+		if oid == ".1.3.6.1.4.1.2789.41717.10.1" {
 			Fqdn = append(Fqdn,fmt.Sprintf("%v",result))
 				fmt.Println("h")
 		}
-		if varoid == ".1.3.6.1.4.1.2789.41717.10.2" {
+		if oid == ".1.3.6.1.4.1.2789.41717.10.2" {
 			s := fmt.Sprintf("%v",result)
 			S, _ := strconv.Atoi(s)
 			Status = append(Status,S)
