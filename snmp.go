@@ -785,21 +785,21 @@ func (w WapSNMP) ParseTrap(response []byte,filename string) error {
 		re_2, _:= regexp.Compile(`.1.3.6.1.4.1.2789.41717.10.2`)
 		if re_1.MatchString(oid) == true {
 			Fqdn = append(Fqdn,fmt.Sprintf("%v",result))
-				fmt.Println("h")
+				//fmt.Println("h")
 		}
 		if re_2.MatchString(oid) == true {
 			s := fmt.Sprintf("%v",result)
 			S, _ := strconv.Atoi(s)
 			Status = append(Status,S)
-				fmt.Println("Q")
+				//fmt.Println("Q")
 		}
 	}
 	fmt.Printf("\n");
 		if _, err = f.WriteString(fmt.Sprintf("\n")); err != nil {
    		 panic(err)
 		}
-	fmt.Println(Status,Fqdn)
-	//mySql(Fqdn[0],Status[0])
+	//fmt.Println(Status,Fqdn)
+	mySql(Fqdn[0],Status[0])
 	return nil
 }
 
