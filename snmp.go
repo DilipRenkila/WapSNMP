@@ -819,12 +819,12 @@ func mySql(FQDN string,STATUS int) {
 	for rows.Next(){
 		i = i+1
 	}
-	fmt.Println(i)
+	//fmt.Println(i)
 	rows ,err = db.Query("select * from Traps where FQDN = ?",FQDN)
 	if err != nil {
 		panic(err.Error())
 	}
-	if i > 0 {
+	if i != 0 {
 
 		for rows.Next(){
 			var status int
@@ -852,7 +852,7 @@ func mySql(FQDN string,STATUS int) {
 		if err != nil {
 			panic(err.Error())
 		}
-		_, err = s.Exec(FQDN,int(time.Now().Unix()),STATUS,0,0)
+		_, err = s.Exec(FQDN,STATUS,int(time.Now().Unix()),0,0)
 		if err != nil {
 			panic(err.Error())
 		}
