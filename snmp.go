@@ -22,6 +22,7 @@ import (
 	"database/sql"
 	"strconv"
 	_ "github.com/go-sql-driver/mysql"
+	"regexp"
 )
 
 type V3user struct {
@@ -780,11 +781,13 @@ func (w WapSNMP) ParseTrap(response []byte,filename string) error {
 		}
 		fmt.Printf("%s = %v\n",varoid,result);
 		oid:=fmt.Sprintf("%v",varoid)
-		if oid == ".1.3.6.1.4.1.2789.41717.10.1" {
+		re_1, _:= regexp.Compile(`.1.3.6.1.4.1.2789.41717.10.1`)
+		re_2, _:= regexp.Compile(`.1.3.6.1.4.1.2789.41717.10.2`)
+		if re_1.MatchString(oid) == true {
 			Fqdn = append(Fqdn,fmt.Sprintf("%v",result))
 				fmt.Println("h")
 		}
-		if oid == ".1.3.6.1.4.1.2789.41717.10.2" {
+		if re_2.MatchString(oid) == true {
 			s := fmt.Sprintf("%v",result)
 			S, _ := strconv.Atoi(s)
 			Status = append(Status,S)
